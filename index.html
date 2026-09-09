@@ -253,7 +253,6 @@
       opacity: 0.85;
     }
 
-    /* Fix helytartó a Következő gombnak az ugrálás megakadályozására */
     .next-btn-wrapper {
       min-height: 50px;
       display: flex;
@@ -361,7 +360,7 @@
   const IMAGE_EXTENSION = ".jpg";
 
   const quizData = [
-    // JUHOK (1-35, a 29-es nélkül)
+    // JUHOK (1-35, a 29-es nélkül)[cite: 1]
     { id: 1, name: "Hortobágyi racka", type: "juh" },
     { id: 2, name: "Gyimesi racka", type: "juh" },
     { id: 3, name: "Cigája", type: "juh" },
@@ -397,14 +396,14 @@
     { id: 34, name: "Kameruni juh", type: "juh" },
     { id: 35, name: "Jákob juh", type: "juh" },
 
-    // KECSKÉK (36-40)
+    // KECSKÉK (36-40)[cite: 1]
     { id: 36, name: "Magyar parlagi kecske", type: "kecske" },
     { id: 37, name: "Búr kecske", type: "kecske" },
     { id: 38, name: "Alpesi kecske", type: "kecske" },
     { id: 39, name: "Anglo-núbiai kecske", type: "kecske" },
     { id: 40, name: "Szánentáli kecske", type: "kecske" },
 
-    // SERTÉSEK (41-49)
+    // SERTÉSEK (41-49)[cite: 1]
     { id: 41, name: "Nagyfehér sertés", type: "sertes" },
     { id: 42, name: "Lapály sertés", type: "sertes" },
     { id: 43, name: "Duroc sertés", type: "sertes" },
@@ -415,7 +414,7 @@
     { id: 48, name: "Fecskehasú mangalica", type: "sertes" },
     { id: 49, name: "Szőke mangalica", type: "sertes" },
 
-    // SZARVASMARHÁK (50-69)
+    // SZARVASMARHÁK (50-69)[cite: 1]
     { id: 50, name: "Holstein-fríz (fekete-fehér)", type: "marha" },
     { id: 51, name: "Holstein-fríz (vörös-fehér / Red)", type: "marha" },
     { id: 52, name: "Jersey", type: "marha" },
@@ -437,7 +436,7 @@
     { id: 68, name: "Magyartarka (1)", type: "marha" },
     { id: 69, name: "Magyartarka (2)", type: "marha" },
 
-    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)
+    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)[cite: 1]
     { id: 70, name: "Rhode Island", type: "madar" },
     { id: 71, name: "Fehér leghorn", type: "madar" },
     { id: 72, name: "New Hampshire", type: "madar" },
@@ -487,14 +486,21 @@
     return name;
   }
 
-  function getDistractors(item, pool) {
+  // TÉVESZTŐK SORSOLÁSA: MINDIG AZ ADOTT ÁLLAT SAJÁT FAJCSOPORTJÁBÓL!
+  function getDistractors(item) {
     const correctClean = getCleanName(item.name);
-    let samePool = pool.filter(x => getCleanName(x.name) !== correctClean);
-    if (samePool.length < 3) {
-      const otherItems = quizData.filter(x => getCleanName(x.name) !== correctClean && !samePool.includes(x));
-      samePool = samePool.concat(otherItems);
+
+    // Kifejezetten az adott állat típusát (type) szűrjük le a teljes adatbázisból
+    let sameSpeciesPool = quizData.filter(x => x.type === item.type && getCleanName(x.name) !== correctClean);
+
+    // Ha véletlenül nem lenne legalább 3 más fajta (a kecskéknél pont 4 másik van, így mindenhol elég),
+    // csak végső esetben egészíti ki mással
+    if (sameSpeciesPool.length < 3) {
+      const otherSpecies = quizData.filter(x => getCleanName(x.name) !== correctClean && !sameSpeciesPool.includes(x));
+      sameSpeciesPool = sameSpeciesPool.concat(otherSpecies);
     }
-    const uniqueNames = [...new Set(samePool.map(x => getCleanName(x.name)))];
+
+    const uniqueNames = [...new Set(sameSpeciesPool.map(x => getCleanName(x.name)))];
     return shuffleArray(uniqueNames).slice(0, 3);
   }
 
@@ -530,11 +536,10 @@
     document.getElementById("progress-text").innerText = `${currentIndex + 1} / ${activeQuestions.length}`;
     document.getElementById("question-image").src = `${IMAGE_FOLDER}${q.id}${IMAGE_EXTENSION}`;
     
-    // Gomb elrejtése a helytartó megtartásával
     document.getElementById("next-btn").classList.add("hidden-btn");
 
-    let categoryPool = (selectedCategory === 'all') ? quizData : quizData.filter(x => x.type === selectedCategory);
-    const distractors = getDistractors(q, categoryPool);
+    // Kizárólag a saját fajtájából kérünk zavaró válaszokat
+    const distractors = getDistractors(q);
     const allOptions = shuffleArray([correctDisplayName, ...distractors]);
 
     const container = document.getElementById("options-container");
@@ -565,7 +570,6 @@
       });
     }
 
-    // Finom beúsztatás a fixen fenntartott helyre
     document.getElementById("next-btn").classList.remove("hidden-btn");
   }
 
