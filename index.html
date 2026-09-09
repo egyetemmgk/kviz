@@ -192,10 +192,12 @@
       border: 1px solid var(--card-border);
     }
 
+    /* containment a teljes kép megmutatásához levágás nélkül */
     .image-container img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      padding: 6px;
     }
 
     .options-grid {
@@ -486,15 +488,10 @@
     return name;
   }
 
-  // TÉVESZTŐK SORSOLÁSA: MINDIG AZ ADOTT ÁLLAT SAJÁT FAJCSOPORTJÁBÓL!
   function getDistractors(item) {
     const correctClean = getCleanName(item.name);
-
-    // Kifejezetten az adott állat típusát (type) szűrjük le a teljes adatbázisból
     let sameSpeciesPool = quizData.filter(x => x.type === item.type && getCleanName(x.name) !== correctClean);
 
-    // Ha véletlenül nem lenne legalább 3 más fajta (a kecskéknél pont 4 másik van, így mindenhol elég),
-    // csak végső esetben egészíti ki mással
     if (sameSpeciesPool.length < 3) {
       const otherSpecies = quizData.filter(x => getCleanName(x.name) !== correctClean && !sameSpeciesPool.includes(x));
       sameSpeciesPool = sameSpeciesPool.concat(otherSpecies);
@@ -538,7 +535,6 @@
     
     document.getElementById("next-btn").classList.add("hidden-btn");
 
-    // Kizárólag a saját fajtájából kérünk zavaró válaszokat
     const distractors = getDistractors(q);
     const allOptions = shuffleArray([correctDisplayName, ...distractors]);
 
