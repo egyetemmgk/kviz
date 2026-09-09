@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fajtafelismerő Kvíz</title>
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --text: #000000;
+      --text-sub: #8e8e93;
+      --tint: #007aff;
+      --btn-bg: #f2f2f7;
+      --btn-border: #e5e5ea;
+      --btn-text: #000000;
+      --correct: #34c759;
+      --incorrect: #ff3b30;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --card-bg: rgba(28, 28, 30, 0.85);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #ffffff;
+      --text-sub: #8e8e93;
+      --tint: #0a84ff;
+      --btn-bg: #2c2c2e;
+      --btn-border: #3a3a3c;
+      --btn-text: #ffffff;
+      --correct: #30d158;
+      --incorrect: #ff453a;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .quiz-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.2s ease;
+      z-index: 10;
+    }
+    .theme-toggle:active {
+      transform: scale(0.9);
+    }
+
+    h2 {
+      margin: 4px 0 6px 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      color: var(--text-sub);
+      font-size: 14px;
+      margin-bottom: 22px;
+      font-weight: 400;
+    }
+
+    .filter-section {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: block;
+      margin-left: 4px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .filter-chip {
+      padding: 10px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--btn-border);
+      border-radius: 12px;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .filter-chip:active {
+      transform: scale(0.96);
+    }
+    .filter-chip.active {
+      background: var(--tint);
+      border-color: var(--tint);
+      color: #ffffff;
+    }
+
+    .mode-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mode-btn {
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--btn-text);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .mode-btn:active {
+      transform: scale(0.98);
+      opacity: 0.8;
+    }
+
+    .progress {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .image-container {
+      width: 100%;
+      height: 270px;
+      background: var(--btn-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      border: 1px solid var(--card-border);
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    button.opt-btn {
+      padding: 14px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      color: var(--btn-text);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.3;
+    }
+    button.opt-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    button.opt-btn.correct {
+      background-color: var(--correct) !important;
+      border-color: var(--correct) !important;
+      color: #ffffff !important;
+    }
+    button.opt-btn.incorrect {
+      background-color: var(--incorrect) !important;
+      border-color: var(--incorrect) !important;
+      color: #ffffff !important;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: var(--tint);
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+    }
+    .action-btn:active {
+      transform: scale(0.98);
+      opacity: 0.85;
+    }
+
+    /* Fix helytartó a Következő gombnak az ugrálás megakadályozására */
+    .next-btn-wrapper {
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+    }
+    
+    #next-btn {
+      margin-top: 0;
+      transition: opacity 0.25s ease, transform 0.2s ease;
+    }
+    #next-btn.hidden-btn {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(6px);
+    }
+
+    .secondary-btn {
+      background-color: transparent;
+      color: var(--tint);
+      border: 1px solid var(--btn-border);
+      margin-top: 8px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" aria-label="Témaváltás">🌙</button>
+
+  <!-- 1. FŐMENÜ -->
+  <div id="start-view">
+    <h2>Fajtafelismerő</h2>
+    <div class="subtitle">Gyakorló modul és teszt</div>
+
+    <div class="filter-section">
+      <span class="filter-label">Fajcsoport</span>
+      <div class="filter-grid" id="filter-group">
+        <div class="filter-chip active" onclick="setCategory('all', this)">Mind (89)</div>
+        <div class="filter-chip" onclick="setCategory('juh', this)">Juh (34)</div>
+        <div class="filter-chip" onclick="setCategory('kecske', this)">Kecske (5)</div>
+        <div class="filter-chip" onclick="setCategory('sertes', this)">Sertés (9)</div>
+        <div class="filter-chip" onclick="setCategory('marha', this)">Marha (19)</div>
+        <div class="filter-chip" onclick="setCategory('madar', this)">Baromfi (22)</div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <span class="filter-label">Kérdésszám</span>
+      <div class="mode-list">
+        <button class="mode-btn" onclick="initGame(5)">⚡ Villám (5 kérdés)</button>
+        <button class="mode-btn" onclick="initGame(10)">🎯 Gyakorló (10 kérdés)</button>
+        <button class="mode-btn" id="all-mode-btn" onclick="initGame('all')">🏆 Teljes csoport</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. KVÍZ FELÜLET -->
+  <div id="quiz-view" class="hidden">
+    <div class="progress" id="progress-text">1 / 5</div>
+    <div class="image-container">
+      <img id="question-image" src="" alt="Felismerendő fajta">
+    </div>
+    <div class="options-grid" id="options-container"></div>
+    <div class="next-btn-wrapper">
+      <button id="next-btn" class="action-btn hidden-btn" onclick="handleNextQuestion()">Következő</button>
+    </div>
+  </div>
+
+  <!-- 3. EREDMÉNYJELZŐ FELÜLET -->
+  <div id="result-view" class="hidden">
+    <h2>Befejezve</h2>
+    <p id="score-text" style="font-size: 20px; font-weight: 700; margin: 20px 0;"></p>
+    <button class="action-btn" onclick="initGame(lastSelectedMode)">Újra</button>
+    <button class="action-btn secondary-btn" onclick="showStartView()">Menü</button>
+  </div>
+</div>
+
+<script>
+  function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').innerText = isDark ? '☀️' : '🌙';
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.getElementById('theme-btn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
+  }
+
+  initTheme();
+
+  const IMAGE_FOLDER = "kepek/";
+  const IMAGE_EXTENSION = ".jpg";
+
+  const quizData = [
+    // JUHOK (1-35, a 29-es nélkül)
+    { id: 1, name: "Hortobágyi racka", type: "juh" },
+    { id: 2, name: "Gyimesi racka", type: "juh" },
+    { id: 3, name: "Cigája", type: "juh" },
+    { id: 4, name: "Cikta", type: "juh" },
+    { id: 5, name: "Sárgafejű berke", type: "juh" },
+    { id: 6, name: "Alföldi suta racka", type: "juh" },
+    { id: 7, name: "Tejelő cigája", type: "juh" },
+    { id: 8, name: "Magyar merinó", type: "juh" },
+    { id: 9, name: "Landschaf merino", type: "juh" },
+    { id: 10, name: "Német húsmerinó", type: "juh" },
+    { id: 11, name: "Lacaune", type: "juh" },
+    { id: 12, name: "Berrichon du cher", type: "juh" },
+    { id: 13, name: "Blanc du massif central (BMC)", type: "juh" },
+    { id: 14, name: "Charollais", type: "juh" },
+    { id: 15, name: "Ile de France", type: "juh" },
+    { id: 16, name: "Fehér dorper", type: "juh" },
+    { id: 17, name: "Dorper", type: "juh" },
+    { id: 18, name: "Suffolk", type: "juh" },
+    { id: 19, name: "Fehér Suffolk", type: "juh" },
+    { id: 20, name: "Texel", type: "juh" },
+    { id: 21, name: "Hampshire (juh)", type: "juh" },
+    { id: 22, name: "Kékfejű húsjuh", type: "juh" },
+    { id: 23, name: "Romney", type: "juh" },
+    { id: 24, name: "Shropshire", type: "juh" },
+    { id: 25, name: "Southdown", type: "juh" },
+    { id: 26, name: "Vendée-i húsjuh", type: "juh" },
+    { id: 27, name: "Romanov", type: "juh" },
+    { id: 28, name: "Bábolna Tetra juh", type: "juh" },
+    { id: 30, name: "Brit tejelő juh", type: "juh" },
+    { id: 31, name: "Keletfríz juh", type: "juh" },
+    { id: 32, name: "Kerry Hill", type: "juh" },
+    { id: 33, name: "Wallisi feketeorrú juh", type: "juh" },
+    { id: 34, name: "Kameruni juh", type: "juh" },
+    { id: 35, name: "Jákob juh", type: "juh" },
+
+    // KECSKÉK (36-40)
+    { id: 36, name: "Magyar parlagi kecske", type: "kecske" },
+    { id: 37, name: "Búr kecske", type: "kecske" },
+    { id: 38, name: "Alpesi kecske", type: "kecske" },
+    { id: 39, name: "Anglo-núbiai kecske", type: "kecske" },
+    { id: 40, name: "Szánentáli kecske", type: "kecske" },
+
+    // SERTÉSEK (41-49)
+    { id: 41, name: "Nagyfehér sertés", type: "sertes" },
+    { id: 42, name: "Lapály sertés", type: "sertes" },
+    { id: 43, name: "Duroc sertés", type: "sertes" },
+    { id: 44, name: "Pietrain sertés", type: "sertes" },
+    { id: 45, name: "Hampshire (sertés)", type: "sertes" },
+    { id: 46, name: "Fekete mangalica", type: "sertes" },
+    { id: 47, name: "Vörös mangalica", type: "sertes" },
+    { id: 48, name: "Fecskehasú mangalica", type: "sertes" },
+    { id: 49, name: "Szőke mangalica", type: "sertes" },
+
+    // SZARVASMARHÁK (50-69)
+    { id: 50, name: "Holstein-fríz (fekete-fehér)", type: "marha" },
+    { id: 51, name: "Holstein-fríz (vörös-fehér / Red)", type: "marha" },
+    { id: 52, name: "Jersey", type: "marha" },
+    { id: 53, name: "Ayrshire", type: "marha" },
+    { id: 54, name: "Brown swiss", type: "marha" },
+    { id: 55, name: "Svéd vörös", type: "marha" },
+    { id: 56, name: "Angus (fekete)", type: "marha" },
+    { id: 57, name: "Angus (vörös)", type: "marha" },
+    { id: 58, name: "Hereford", type: "marha" },
+    { id: 59, name: "Galloway", type: "marha" },
+    { id: 60, name: "Charolais", type: "marha" },
+    { id: 61, name: "Limousin", type: "marha" },
+    { id: 62, name: "Blonde d'Aquitaine", type: "marha" },
+    { id: 63, name: "Fehér-kék belga", type: "marha" },
+    { id: 64, name: "Romagnola", type: "marha" },
+    { id: 65, name: "Magyar szürkemarha", type: "marha" },
+    { id: 66, name: "Piemonti", type: "marha" },
+    { id: 67, name: "Chianina", type: "marha" },
+    { id: 68, name: "Magyartarka (1)", type: "marha" },
+    { id: 69, name: "Magyartarka (2)", type: "marha" },
+
+    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)
+    { id: 70, name: "Rhode Island", type: "madar" },
+    { id: 71, name: "Fehér leghorn", type: "madar" },
+    { id: 72, name: "New Hampshire", type: "madar" },
+    { id: 73, name: "Plymouth rock", type: "madar" },
+    { id: 74, name: "Sussex", type: "madar" },
+    { id: 75, name: "Magyar nemesített tyúk", type: "madar" },
+    { id: 76, name: "Cochin", type: "madar" },
+    { id: 77, name: "Brahma", type: "madar" },
+    { id: 78, name: "Orpington", type: "madar" },
+    { id: 79, name: "Yokohama", type: "madar" },
+    { id: 80, name: "Japán tyúk", type: "madar" },
+    { id: 81, name: "Gyöngytyúk", type: "madar" },
+    { id: 82, name: "Erdélyi kopasznyakú tyúk", type: "madar" },
+    { id: 83, name: "Magyar pulyka", type: "madar" },
+    { id: 84, name: "Magyar lúd (tarka)", type: "madar" },
+    { id: 85, name: "Magyar lúd (fehér)", type: "madar" },
+    { id: 86, name: "Pézsmaréce", type: "madar" },
+    { id: 87, name: "Fehér cornish", type: "madar" },
+    { id: 88, name: "Kolos szürke lúd", type: "madar" },
+    { id: 89, name: "Minorka", type: "madar" },
+    { id: 90, name: "Wyandotte", type: "madar" }
+  ];
+
+  let selectedCategory = 'all';
+  let lastSelectedMode = 5;
+  let activeQuestions = [];
+  let currentIndex = 0;
+  let score = 0;
+
+  function shuffleArray(arr) {
+    const array = [...arr];
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function setCategory(cat, chipElement) {
+    selectedCategory = cat;
+    document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+    chipElement.classList.add('active');
+  }
+
+  function getCleanName(name) {
+    if (name.startsWith("Magyartarka")) return "Magyartarka";
+    return name;
+  }
+
+  function getDistractors(item, pool) {
+    const correctClean = getCleanName(item.name);
+    let samePool = pool.filter(x => getCleanName(x.name) !== correctClean);
+    if (samePool.length < 3) {
+      const otherItems = quizData.filter(x => getCleanName(x.name) !== correctClean && !samePool.includes(x));
+      samePool = samePool.concat(otherItems);
+    }
+    const uniqueNames = [...new Set(samePool.map(x => getCleanName(x.name)))];
+    return shuffleArray(uniqueNames).slice(0, 3);
+  }
+
+  function showStartView() {
+    document.getElementById("start-view").classList.remove("hidden");
+    document.getElementById("quiz-view").classList.add("hidden");
+    document.getElementById("result-view").classList.add("hidden");
+  }
+
+  function initGame(mode) {
+    lastSelectedMode = mode;
+    score = 0;
+    currentIndex = 0;
+
+    let basePool = (selectedCategory === 'all') 
+      ? quizData 
+      : quizData.filter(item => item.type === selectedCategory);
+
+    const count = (mode === 'all') ? basePool.length : Math.min(parseInt(mode, 10), basePool.length);
+    activeQuestions = shuffleArray(basePool).slice(0, count);
+
+    document.getElementById("start-view").classList.add("hidden");
+    document.getElementById("result-view").classList.add("hidden");
+    document.getElementById("quiz-view").classList.remove("hidden");
+
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const q = activeQuestions[currentIndex];
+    const correctDisplayName = getCleanName(q.name);
+
+    document.getElementById("progress-text").innerText = `${currentIndex + 1} / ${activeQuestions.length}`;
+    document.getElementById("question-image").src = `${IMAGE_FOLDER}${q.id}${IMAGE_EXTENSION}`;
+    
+    // Gomb elrejtése a helytartó megtartásával
+    document.getElementById("next-btn").classList.add("hidden-btn");
+
+    let categoryPool = (selectedCategory === 'all') ? quizData : quizData.filter(x => x.type === selectedCategory);
+    const distractors = getDistractors(q, categoryPool);
+    const allOptions = shuffleArray([correctDisplayName, ...distractors]);
+
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+
+    allOptions.forEach(optionText => {
+      const btn = document.createElement("button");
+      btn.className = "opt-btn";
+      btn.innerText = optionText;
+      btn.onclick = () => selectOption(btn, correctDisplayName);
+      container.appendChild(btn);
+    });
+  }
+
+  function selectOption(selectedBtn, correctAnswer) {
+    const buttons = document.querySelectorAll(".opt-btn");
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (selectedBtn.innerText === correctAnswer) {
+      selectedBtn.classList.add("correct");
+      score++;
+    } else {
+      selectedBtn.classList.add("incorrect");
+      buttons.forEach(btn => {
+        if (btn.innerText === correctAnswer) {
+          btn.classList.add("correct");
+        }
+      });
+    }
+
+    // Finom beúsztatás a fixen fenntartott helyre
+    document.getElementById("next-btn").classList.remove("hidden-btn");
+  }
+
+  function handleNextQuestion() {
+    currentIndex++;
+    if (currentIndex < activeQuestions.length) {
+      renderCurrentQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("quiz-view").classList.add("hidden");
+    document.getElementById("result-view").classList.remove("hidden");
+    
+    const percent = Math.round((score / activeQuestions.length) * 100);
+    document.getElementById("score-text").innerText = `${score} / ${activeQuestions.length} pont (${percent}%)`;
+  }
+</script>
+
+</body>
+</html>
