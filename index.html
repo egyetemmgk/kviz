@@ -394,7 +394,7 @@
 
   initTheme();
 
-  // ÁLLAT ADATBÁZIS (89 elem, a 29-es nélkül)[cite: 1]
+  // ÁLLAT ADATBÁZIS (89 db, 29 törölve)[cite: 1]
   const IMAGE_FOLDER = "kepek/";
   const IMAGE_EXTENSION = ".jpg";
 
@@ -499,22 +499,27 @@
     { id: 90, name: "Wyandotte", type: "madar" }
   ];
 
-  // MAG ADATBÁZIS (13 db, 1. az Őszi búza)
+  // MAG ADATBÁZIS CSOPORTOKRA BONTVA (group: 1 = gabonák, 2 = kukoricák/hüvelyesek, 3 = ipari/aprómag)
   const SEED_FOLDER = "mag_kepek/";
   const seedData = [
-    { id: 1, name: "Őszi búza", latin: "Triticum aestivum" },
-    { id: 2, name: "Árpa", latin: "Hordeum vulgare" },
-    { id: 3, name: "Zab", latin: "Avena sativa" },
-    { id: 4, name: "Rozs", latin: "Secale cereale" },
-    { id: 5, name: "Tritikálé", latin: "Triticosecale" },
-    { id: 6, name: "Lófogú kukorica", latin: "Zea mays indentata" },
-    { id: 7, name: "Pattogtatni való kukorica", latin: "Zea mays everta" },
-    { id: 8, name: "Borsó", latin: "Pisum sativum" },
-    { id: 9, name: "Szója", latin: "Glycine max (v. Glycine soja)" },
-    { id: 10, name: "Cukorrépa", latin: "Beta vulgaris cv. saccharifera" },
-    { id: 11, name: "Napraforgó", latin: "Helianthus annuus" },
-    { id: 12, name: "Káposztarepce", latin: "Brassica napus oleifera" },
-    { id: 13, name: "Lucerna", latin: "Medicago sativa" }
+    // 1-5. Gabonafélék
+    { id: 1, name: "Őszi búza", latin: "Triticum aestivum", group: 1 },
+    { id: 2, name: "Árpa", latin: "Hordeum vulgare", group: 1 },
+    { id: 3, name: "Zab", latin: "Avena sativa", group: 1 },
+    { id: 4, name: "Rozs", latin: "Secale cereale", group: 1 },
+    { id: 5, name: "Tritikálé", latin: "Triticosecale", group: 1 },
+
+    // 6-9. Kukorica és hüvelyesek
+    { id: 6, name: "Lófogú kukorica", latin: "Zea mays indentata", group: 2 },
+    { id: 7, name: "Pattogtatni való kukorica", latin: "Zea mays everta", group: 2 },
+    { id: 8, name: "Borsó", latin: "Pisum sativum", group: 2 },
+    { id: 9, name: "Szója", latin: "Glycine max (v. Glycine soja)", group: 2 },
+
+    // 10-13. Ipari / aprómagvak
+    { id: 10, name: "Cukorrépa", latin: "Beta vulgaris cv. saccharifera", group: 3 },
+    { id: 11, name: "Napraforgó", latin: "Helianthus annuus", group: 3 },
+    { id: 12, name: "Káposztarepce", latin: "Brassica napus oleifera", group: 3 },
+    { id: 13, name: "Lucerna", latin: "Medicago sativa", group: 3 }
   ];
 
   let currentModule = 'animals';
@@ -628,11 +633,15 @@
     renderCurrentQuestion();
   }
 
+  // TÉVESZTŐK KIVÁLASZTÁSA: PONTOSAN AZ ADOTT CSOPORTBÓL (1-5, 6-9, vagy 10-13)
   function getSeedDistractors(item, isLatin) {
     const key = isLatin ? 'latin' : 'name';
     const correctVal = item[key];
-    const otherVals = seedData.filter(x => x[key] !== correctVal).map(x => x[key]);
-    return shuffleArray(otherVals).slice(0, 3);
+    
+    // Csak a saját csoportjából válogat (1-5 gabonák, 6-9 kukoricák/hüvelyesek, 10-13 egyéb)
+    const sameGroup = seedData.filter(x => x.group === item.group && x[key] !== correctVal).map(x => x[key]);
+    
+    return shuffleArray(sameGroup).slice(0, 3);
   }
 
   function renderCurrentQuestion() {
