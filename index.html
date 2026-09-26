@@ -301,7 +301,7 @@
     </div>
   </div>
 
-  <!-- 1. EREDETI FAJTAFELISMERŐ FŐMENÜ (TELJESEN ÉRINTETLEN) -->
+  <!-- 1. EREDETI FAJTAFELISMERŐ FŐMENÜ -->
   <div id="start-view" class="hidden">
     <h2>Fajtafelismerő</h2>
     <div class="subtitle">Gyakorló modul és teszt</div>
@@ -346,7 +346,7 @@
       <span class="filter-label">Kérdésszám</span>
       <div class="mode-list">
         <button class="mode-btn" onclick="initSeedGame(5)">⚡ Villám (5 kérdés)</button>
-        <button class="mode-btn" onclick="initSeedGame('all')">🏆 Összes mag (12 mag)</button>
+        <button class="mode-btn" onclick="initSeedGame('all')">🏆 Összes mag (13 mag)</button>
       </div>
     </div>
     <button class="action-btn secondary-btn" onclick="showHomeView()">← Vissza a főválasztóhoz</button>
@@ -394,12 +394,12 @@
 
   initTheme();
 
-  // EREDETI ÁLLAT ADATBÁZIS (ÉRINTETLEN)
+  // ÁLLAT ADATBÁZIS (89 elem, a 29-es nélkül)[cite: 1]
   const IMAGE_FOLDER = "kepek/";
   const IMAGE_EXTENSION = ".jpg";
 
   const quizData = [
-    // JUHOK (1-35, a 29-es nélkül)
+    // JUHOK (1-35, a 29-es nélkül)[cite: 1]
     { id: 1, name: "Hortobágyi racka", type: "juh" },
     { id: 2, name: "Gyimesi racka", type: "juh" },
     { id: 3, name: "Cigája", type: "juh" },
@@ -435,14 +435,14 @@
     { id: 34, name: "Kameruni juh", type: "juh" },
     { id: 35, name: "Jákob juh", type: "juh" },
 
-    // KECSKÉK (36-40)
+    // KECSKÉK (36-40)[cite: 1]
     { id: 36, name: "Magyar parlagi kecske", type: "kecske" },
     { id: 37, name: "Búr kecske", type: "kecske" },
     { id: 38, name: "Alpesi kecske", type: "kecske" },
     { id: 39, name: "Anglo-núbiai kecske", type: "kecske" },
     { id: 40, name: "Szánentáli kecske", type: "kecske" },
 
-    // SERTÉSEK (41-49)
+    // SERTÉSEK (41-49)[cite: 1]
     { id: 41, name: "Nagyfehér sertés", type: "sertes" },
     { id: 42, name: "Lapály sertés", type: "sertes" },
     { id: 43, name: "Duroc sertés", type: "sertes" },
@@ -453,7 +453,7 @@
     { id: 48, name: "Fecskehasú mangalica", type: "sertes" },
     { id: 49, name: "Szőke mangalica", type: "sertes" },
 
-    // SZARVASMARHÁK (50-69)
+    // SZARVASMARHÁK (50-69)[cite: 1]
     { id: 50, name: "Holstein-fríz (fekete-fehér)", type: "marha" },
     { id: 51, name: "Holstein-fríz (vörös-fehér / Red)", type: "marha" },
     { id: 52, name: "Jersey", type: "marha" },
@@ -475,7 +475,7 @@
     { id: 68, name: "Magyartarka (1)", type: "marha" },
     { id: 69, name: "Magyartarka (2)", type: "marha" },
 
-    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)
+    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)[cite: 1]
     { id: 70, name: "Rhode Island", type: "madar" },
     { id: 71, name: "Fehér leghorn", type: "madar" },
     { id: 72, name: "New Hampshire", type: "madar" },
@@ -499,26 +499,27 @@
     { id: 90, name: "Wyandotte", type: "madar" }
   ];
 
-  // ÚJ MAG ADATBÁZIS (12 db a PDF sorrendjében)
+  // MAG ADATBÁZIS (13 db, 1. az Őszi búza)
   const SEED_FOLDER = "mag_kepek/";
   const seedData = [
-    { id: 1, name: "Árpa", latin: "Hordeum vulgare" },
-    { id: 2, name: "Zab", latin: "Avena sativa" },
-    { id: 3, name: "Rozs", latin: "Secale cereale" },
-    { id: 4, name: "Tritikálé", latin: "Triticosecale" },
-    { id: 5, name: "Lófogú kukorica", latin: "Zea mays indentata" },
-    { id: 6, name: "Pattogtatni való kukorica", latin: "Zea mays everta" },
-    { id: 7, name: "Borsó", latin: "Pisum sativum" },
-    { id: 8, name: "Szója", latin: "Glycine max (v. Glycine soja)" },
-    { id: 9, name: "Cukorrépa", latin: "Beta vulgaris cv. saccharifera" },
-    { id: 10, name: "Napraforgó", latin: "Helianthus annuus" },
-    { id: 11, name: "Káposztarepce", latin: "Brassica napus oleifera" },
-    { id: 12, name: "Lucerna", latin: "Medicago sativa" }
+    { id: 1, name: "Őszi búza", latin: "Triticum aestivum" },
+    { id: 2, name: "Árpa", latin: "Hordeum vulgare" },
+    { id: 3, name: "Zab", latin: "Avena sativa" },
+    { id: 4, name: "Rozs", latin: "Secale cereale" },
+    { id: 5, name: "Tritikálé", latin: "Triticosecale" },
+    { id: 6, name: "Lófogú kukorica", latin: "Zea mays indentata" },
+    { id: 7, name: "Pattogtatni való kukorica", latin: "Zea mays everta" },
+    { id: 8, name: "Borsó", latin: "Pisum sativum" },
+    { id: 9, name: "Szója", latin: "Glycine max (v. Glycine soja)" },
+    { id: 10, name: "Cukorrépa", latin: "Beta vulgaris cv. saccharifera" },
+    { id: 11, name: "Napraforgó", latin: "Helianthus annuus" },
+    { id: 12, name: "Káposztarepce", latin: "Brassica napus oleifera" },
+    { id: 13, name: "Lucerna", latin: "Medicago sativa" }
   ];
 
-  let currentModule = 'animals'; // 'animals' vagy 'seeds'
+  let currentModule = 'animals';
   let selectedCategory = 'all';
-  let seedLang = 'hu'; // 'hu' vagy 'la'
+  let seedLang = 'hu';
   let lastSelectedMode = 5;
   let activeQuestions = [];
   let currentIndex = 0;
@@ -533,7 +534,6 @@
     return array;
   }
 
-  // FŐVÁLASZTÓ KEZELÉSE
   function showHomeView() {
     document.getElementById("home-view").classList.remove("hidden");
     document.getElementById("start-view").classList.add("hidden");
@@ -562,7 +562,6 @@
     }
   }
 
-  // EREDETI ÁLLATOS LOGIKA
   function setCategory(cat, chipElement) {
     selectedCategory = cat;
     document.querySelectorAll('#filter-group .filter-chip').forEach(el => el.classList.remove('active'));
@@ -587,12 +586,6 @@
     return shuffleArray(uniqueNames).slice(0, 3);
   }
 
-  function showStartView() {
-    document.getElementById("start-view").classList.remove("hidden");
-    document.getElementById("quiz-view").classList.add("hidden");
-    document.getElementById("result-view").classList.add("hidden");
-  }
-
   function initGame(mode) {
     currentModule = 'animals';
     lastSelectedMode = mode;
@@ -613,7 +606,6 @@
     renderCurrentQuestion();
   }
 
-  // MAGOKHOZ TARTOZÓ LOGIKA
   function setSeedLang(lang, el) {
     seedLang = lang;
     el.parentElement.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
@@ -643,7 +635,6 @@
     return shuffleArray(otherVals).slice(0, 3);
   }
 
-  // KÉRDÉS MEGJELENÍTÉSE
   function renderCurrentQuestion() {
     const q = activeQuestions[currentIndex];
     document.getElementById("progress-text").innerText = `${currentIndex + 1} / ${activeQuestions.length}`;
