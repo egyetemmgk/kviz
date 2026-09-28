@@ -628,24 +628,45 @@
     renderCurrentQuestion();
   }
 
-  function getSeedDistractors(item, isLatin) {
+function getSeedDistractors(item, isLatin) {
     const key = isLatin ? 'latin' : 'name';
     const correctVal = item[key];
 
-    // Ha kukoricáról van szó (id: 6, 7, 8), először a többi kukoricát gyűjtjük össze
-    if ([6, 7, 8].includes(item.id)) {
-      const otherCorns = seedData.filter(x => [6, 7, 8].includes(x.id) && x[key] !== correctVal).map(x => x[key]);
-      const legumes = seedData.filter(x => [9, 10].includes(x.id)).map(x => x[key]);
-      // Mindkét másik kukorica garantáltan bekerül + mellé egy hüvelyes véletlenszerűen
+    // 1. KUKORICÁK: Ha a kérdés bármelyik kukorica, kötelezően a másik két kukorica + 1 hüvelyes jön
+    const isCorn = item.name.toLowerCase().includes("kukorica");
+    if (isCorn) {
+      const otherCorns = seedData
+        .filter(x => x.name.toLowerCase().includes("kukorica") && x[key] !== correctVal)
+        .map(x => x[key]);
+      
+      const legumes = seedData
+        .filter(x => x.group === 2 && !x.name.toLowerCase().includes("kukorica"))
+        .map(x => x[key]);
+
       return [...otherCorns, shuffleArray(legumes)[0]];
     }
 
-    // Ha napraforgóról van szó (id: 12, 13), a másik napraforgó kötelező tévesztő
-    if ([12, 13].includes(item.id)) {
-      const otherSun = seedData.filter(x => [12, 13].includes(x.id) && x[key] !== correctVal).map(x => x[key]);
-      const othersInGroup = seedData.filter(x => x.group === 3 && ![12, 13].includes(x.id)).map(x => x[key]);
+    // 2. NAPRAFORGÓK: Ha napraforgó a kérdés, a másik napraforgó kötelező tévesztő
+    const isSun = item.name.toLowerCase().includes("napraforgó");
+    if (isSun) {
+      const otherSun = seedData
+        .filter(x => x.name.toLowerCase().includes("napraforgó") && x[key] !== correctVal)
+        .map(x => x[key]);
+
+      const othersInGroup = seedData
+        .filter(x => x.group === 3 && !x.name.toLowerCase().includes("napraforgó"))
+        .map(x => x[key]);
+
       return [...otherSun, ...shuffleArray(othersInGroup).slice(0, 2)];
     }
+
+    // 3. MINDEN MÁS: A saját csoportjából választ véletlenszerűen hármat
+    const sameGroup = seedData
+      .filter(x => x.group === item.group && x[key] !== correctVal)
+      .map(x => x[key]);
+      
+    return shuffleArray(sameGroup).slice(0, 3);
+  }
 
     // Minden más esetben marad a csoporton belüli sorsolás
     const sameGroup = seedData.filter(x => x.group === item.group && x[key] !== correctVal).map(x => x[key]);
