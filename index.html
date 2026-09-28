@@ -492,7 +492,7 @@
     { id: 90, name: "Wyandotte", type: "madar" }
   ];
 
-  // MAG ADATBÁZIS (15 mag, rövidítések és magyar szavak nélkül a latin nevekben)
+  // FRISSÍTETT MAG ADATBÁZIS (15 mag, a két napraforgó latin neve pontosan: Helianthus annuus)
   const SEED_FOLDER = "mag_kepek/";
   const seedData = [
     // 1. Gabonafélék (1-5)
@@ -628,48 +628,52 @@
     renderCurrentQuestion();
   }
 
-function getSeedDistractors(item, isLatin) {
+  // TÉVESZTŐK GENERÁLÁSA
+  function getSeedDistractors(item, isLatin) {
     const key = isLatin ? 'latin' : 'name';
     const correctVal = item[key];
 
-    // 1. KUKORICÁK: Ha a kérdés bármelyik kukorica, kötelezően a másik két kukorica + 1 hüvelyes jön
+    // 1. KUKORICÁK: Mindhárom kukoricánál kötelező a másik két kukorica + 1 hüvelyes
     const isCorn = item.name.toLowerCase().includes("kukorica");
     if (isCorn) {
-      const otherCorns = seedData
-        .filter(x => x.name.toLowerCase().includes("kukorica") && x[key] !== correctVal)
-        .map(x => x[key]);
+      const otherCorns = [...new Set(
+        seedData
+          .filter(x => x.name.toLowerCase().includes("kukorica") && x[key] !== correctVal)
+          .map(x => x[key])
+      )];
       
-      const legumes = seedData
-        .filter(x => x.group === 2 && !x.name.toLowerCase().includes("kukorica"))
-        .map(x => x[key]);
+      const legumes = [...new Set(
+        seedData
+          .filter(x => x.group === 2 && !x.name.toLowerCase().includes("kukorica") && x[key] !== correctVal)
+          .map(x => x[key])
+      )];
 
       return [...otherCorns, shuffleArray(legumes)[0]];
     }
 
-    // 2. NAPRAFORGÓK: Ha napraforgó a kérdés, a másik napraforgó kötelező tévesztő
+    // 2. NAPRAFORGÓK: 
+    // Magyar módban a másik napraforgó kötelező tévesztő. 
+    // Latin módban mindkettő "Helianthus annuus", így nem duplázza, hanem a csoport többi tagjából válogat.
     const isSun = item.name.toLowerCase().includes("napraforgó");
-    if (isSun) {
+    if (isSun && !isLatin) {
       const otherSun = seedData
-        .filter(x => x.name.toLowerCase().includes("napraforgó") && x[key] !== correctVal)
-        .map(x => x[key]);
+        .filter(x => x.name.toLowerCase().includes("napraforgó") && x.name !== correctVal)
+        .map(x => x.name);
 
       const othersInGroup = seedData
         .filter(x => x.group === 3 && !x.name.toLowerCase().includes("napraforgó"))
-        .map(x => x[key]);
+        .map(x => x.name);
 
       return [...otherSun, ...shuffleArray(othersInGroup).slice(0, 2)];
     }
 
-    // 3. MINDEN MÁS: A saját csoportjából választ véletlenszerűen hármat
-    const sameGroup = seedData
-      .filter(x => x.group === item.group && x[key] !== correctVal)
-      .map(x => x[key]);
-      
-    return shuffleArray(sameGroup).slice(0, 3);
-  }
+    // 3. EGYÉB ESETEK: Mindig a saját csoportjából válogat 3 egyedi tévesztőt
+    const sameGroup = [...new Set(
+      seedData
+        .filter(x => x.group === item.group && x[key] !== correctVal)
+        .map(x => x[key])
+    )];
 
-    // Minden más esetben marad a csoporton belüli sorsolás
-    const sameGroup = seedData.filter(x => x.group === item.group && x[key] !== correctVal).map(x => x[key]);
     return shuffleArray(sameGroup).slice(0, 3);
   }
 
