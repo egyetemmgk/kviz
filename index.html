@@ -207,7 +207,7 @@
     }
 
     button.opt-btn {
-      padding: 14px 10px;
+      padding: 10px 6px;
       font-size: 13px;
       font-weight: 600;
       background: var(--btn-bg);
@@ -216,14 +216,16 @@
       border-radius: 14px;
       cursor: pointer;
       transition: transform 0.15s ease, background 0.2s ease;
-      min-height: 52px;
+      min-height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1.3;
+      line-height: 1.25;
+      word-break: break-word;
     }
     button.opt-btn.italic-text {
       font-style: italic;
+      font-size: 11px;
     }
     button.opt-btn:active:not(:disabled) {
       transform: scale(0.96);
@@ -301,7 +303,7 @@
     </div>
   </div>
 
-  <!-- 1. EREDETI FAJTAFELISMERŐ FŐMENÜ -->
+  <!-- 1. FAJTAFELISMERŐ FŐMENÜ -->
   <div id="start-view" class="hidden">
     <h2>Fajtafelismerő</h2>
     <div class="subtitle">Gyakorló modul és teszt</div>
@@ -346,7 +348,7 @@
       <span class="filter-label">Kérdésszám</span>
       <div class="mode-list">
         <button class="mode-btn" onclick="initSeedGame(5)">⚡ Villám (5 kérdés)</button>
-        <button class="mode-btn" onclick="initSeedGame('all')">🏆 Összes mag (13 mag)</button>
+        <button class="mode-btn" onclick="initSeedGame('all')">🏆 Összes mag (15 mag)</button>
       </div>
     </div>
     <button class="action-btn secondary-btn" onclick="showHomeView()">← Vissza a főválasztóhoz</button>
@@ -394,12 +396,11 @@
 
   initTheme();
 
-  // ÁLLAT ADATBÁZIS (89 db, 29 törölve)[cite: 1]
+  // ÁLLAT ADATBÁZIS (89 db, 29 törölve)
   const IMAGE_FOLDER = "kepek/";
   const IMAGE_EXTENSION = ".jpg";
 
   const quizData = [
-    // JUHOK (1-35, a 29-es nélkül)[cite: 1]
     { id: 1, name: "Hortobágyi racka", type: "juh" },
     { id: 2, name: "Gyimesi racka", type: "juh" },
     { id: 3, name: "Cigája", type: "juh" },
@@ -434,15 +435,11 @@
     { id: 33, name: "Wallisi feketeorrú juh", type: "juh" },
     { id: 34, name: "Kameruni juh", type: "juh" },
     { id: 35, name: "Jákob juh", type: "juh" },
-
-    // KECSKÉK (36-40)[cite: 1]
     { id: 36, name: "Magyar parlagi kecske", type: "kecske" },
     { id: 37, name: "Búr kecske", type: "kecske" },
     { id: 38, name: "Alpesi kecske", type: "kecske" },
     { id: 39, name: "Anglo-núbiai kecske", type: "kecske" },
     { id: 40, name: "Szánentáli kecske", type: "kecske" },
-
-    // SERTÉSEK (41-49)[cite: 1]
     { id: 41, name: "Nagyfehér sertés", type: "sertes" },
     { id: 42, name: "Lapály sertés", type: "sertes" },
     { id: 43, name: "Duroc sertés", type: "sertes" },
@@ -452,8 +449,6 @@
     { id: 47, name: "Vörös mangalica", type: "sertes" },
     { id: 48, name: "Fecskehasú mangalica", type: "sertes" },
     { id: 49, name: "Szőke mangalica", type: "sertes" },
-
-    // SZARVASMARHÁK (50-69)[cite: 1]
     { id: 50, name: "Holstein-fríz (fekete-fehér)", type: "marha" },
     { id: 51, name: "Holstein-fríz (vörös-fehér / Red)", type: "marha" },
     { id: 52, name: "Jersey", type: "marha" },
@@ -474,8 +469,6 @@
     { id: 67, name: "Chianina", type: "marha" },
     { id: 68, name: "Magyartarka (1)", type: "marha" },
     { id: 69, name: "Magyartarka (2)", type: "marha" },
-
-    // BAROMFIK ÉS VÍZISZÁRNYASOK (70-90)[cite: 1]
     { id: 70, name: "Rhode Island", type: "madar" },
     { id: 71, name: "Fehér leghorn", type: "madar" },
     { id: 72, name: "New Hampshire", type: "madar" },
@@ -499,27 +492,29 @@
     { id: 90, name: "Wyandotte", type: "madar" }
   ];
 
-  // MAG ADATBÁZIS CSOPORTOKRA BONTVA (group: 1 = gabonák, 2 = kukoricák/hüvelyesek, 3 = ipari/aprómag)
+  // MAG ADATBÁZIS (15 mag, rövidítések és magyar szavak nélkül a latin nevekben)
   const SEED_FOLDER = "mag_kepek/";
   const seedData = [
-    // 1-5. Gabonafélék
+    // 1. Gabonafélék (1-5)
     { id: 1, name: "Őszi búza", latin: "Triticum aestivum", group: 1 },
     { id: 2, name: "Árpa", latin: "Hordeum vulgare", group: 1 },
     { id: 3, name: "Zab", latin: "Avena sativa", group: 1 },
     { id: 4, name: "Rozs", latin: "Secale cereale", group: 1 },
     { id: 5, name: "Tritikálé", latin: "Triticosecale", group: 1 },
 
-    // 6-9. Kukorica és hüvelyesek
-    { id: 6, name: "Lófogú kukorica", latin: "Zea mays indentata", group: 2 },
-    { id: 7, name: "Pattogtatni való kukorica", latin: "Zea mays everta", group: 2 },
-    { id: 8, name: "Borsó", latin: "Pisum sativum", group: 2 },
-    { id: 9, name: "Szója", latin: "Glycine max (v. Glycine soja)", group: 2 },
+    // 2. Kukoricák és hüvelyesek (6-10)
+    { id: 6, name: "Kukorica (lófogú)", latin: "Zea mays convarietas dentiformis", group: 2 },
+    { id: 7, name: "Kukorica (csemege)", latin: "Zea mays convarietas saccharata", group: 2 },
+    { id: 8, name: "Kukorica (pattogatni való)", latin: "Zea mays convarietas microsperma", group: 2 },
+    { id: 9, name: "Velőborsó", latin: "Pisum sativum convarietas medullare", group: 2 },
+    { id: 10, name: "Szója", latin: "Glycine max", group: 2 },
 
-    // 10-13. Ipari / aprómagvak
-    { id: 10, name: "Cukorrépa", latin: "Beta vulgaris cv. saccharifera", group: 3 },
-    { id: 11, name: "Napraforgó", latin: "Helianthus annuus", group: 3 },
-    { id: 12, name: "Káposztarepce", latin: "Brassica napus oleifera", group: 3 },
-    { id: 13, name: "Lucerna", latin: "Medicago sativa", group: 3 }
+    // 3. Ipari / olaj- és takarmánynövények (11-15)
+    { id: 11, name: "Cukorrépa", latin: "Beta vulgaris subspecies vulgaris convarietas vulgaris varietas altissima", group: 3 },
+    { id: 12, name: "Étkezési napraforgó", latin: "Helianthus annuus varietas macrocarpus", group: 3 },
+    { id: 13, name: "Olaj napraforgó", latin: "Helianthus annuus varietas oleiferus", group: 3 },
+    { id: 14, name: "Őszi káposztarepce", latin: "Brassica napus subspecies oleifera", group: 3 },
+    { id: 15, name: "Lucerna", latin: "Medicago sativa", group: 3 }
   ];
 
   let currentModule = 'animals';
@@ -633,14 +628,10 @@
     renderCurrentQuestion();
   }
 
-  // TÉVESZTŐK KIVÁLASZTÁSA: PONTOSAN AZ ADOTT CSOPORTBÓL (1-5, 6-9, vagy 10-13)
   function getSeedDistractors(item, isLatin) {
     const key = isLatin ? 'latin' : 'name';
     const correctVal = item[key];
-    
-    // Csak a saját csoportjából válogat (1-5 gabonák, 6-9 kukoricák/hüvelyesek, 10-13 egyéb)
     const sameGroup = seedData.filter(x => x.group === item.group && x[key] !== correctVal).map(x => x[key]);
-    
     return shuffleArray(sameGroup).slice(0, 3);
   }
 
